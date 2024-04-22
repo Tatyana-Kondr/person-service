@@ -39,17 +39,17 @@ public class PersonController {
     }
 
     @GetMapping("/city/{city}")
-    public Iterable<PersonDto> findPersonsByCity(@PathVariable String city) {
+    public PersonDto[] findPersonsByCity(@PathVariable String city) {
         return personService.findPersonsByCity(city);
     }
 
     @GetMapping("ages/{ageFrom}/{ageTo}")
-    public Iterable<PersonDto> findPersonsByAge(@PathVariable Integer ageFrom, @PathVariable Integer ageTo) {
+    public PersonDto[] findPersonsByAge(@PathVariable Integer ageFrom, @PathVariable Integer ageTo) {
         return personService.findPersonsByAge(ageFrom, ageTo);
     }
 
     @GetMapping("/name/{name}")
-    public Iterable<PersonDto> findPersonsByName(@PathVariable String name) {
+    public PersonDto[] findPersonsByName(@PathVariable String name) {
         return personService.findPersonsByName(name);
     }
 

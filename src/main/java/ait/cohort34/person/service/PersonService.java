@@ -10,8 +10,8 @@ public interface PersonService  {
     PersonDto removePersonById(Integer id);
     PersonDto updatePersonName(Integer id, String name);
     PersonDto updatePersonAddress(Integer id, AddressDto addressDto);
-    Iterable<PersonDto> findPersonsByCity(String city);
-    Iterable<PersonDto> findPersonsByAge(Integer ageFrom, Integer ageTo);
-    Iterable<PersonDto> findPersonsByName(String name);
+    PersonDto[] findPersonsByCity(String city);
+    PersonDto[] findPersonsByAge(Integer ageFrom, Integer ageTo);
+    PersonDto[] findPersonsByName(String name);
     Iterable<PopulationDto> getPopulations();
 }

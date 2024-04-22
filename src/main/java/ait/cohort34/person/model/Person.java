@@ -3,6 +3,7 @@ package ait.cohort34.person.model;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @EqualsAndHashCode(of = "id")
 @Entity
+//@Table(name = "persons")
 public class Person {
     @Id
     Integer id;
@@ -19,6 +21,6 @@ public class Person {
     String name;
     LocalDate birthDate;
     @Setter
-    @Embedded
+   // @Embedded
     Address address;
 }

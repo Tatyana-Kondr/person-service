@@ -10,6 +10,9 @@ import ait.cohort34.person.model.Person;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +20,7 @@ public class PersonServiceImpl implements PersonService{
     final PersonRepository personRepository;
     final ModelMapper modelMapper;
 
+    @Transactional
     @Override
     public Boolean addPerson(PersonDto personDto) {
         if (personRepository.existsById(personDto.getId())) {
@@ -32,6 +36,7 @@ public class PersonServiceImpl implements PersonService{
         return modelMapper.map(person, PersonDto.class);
     }
 
+    @Transactional
     @Override
     public PersonDto removePersonById(Integer id) {
         Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
@@ -39,16 +44,18 @@ public class PersonServiceImpl implements PersonService{
         return modelMapper.map(person, PersonDto.class);
     }
 
+    @Transactional
     @Override
     public PersonDto updatePersonName(Integer id, String name) {
         Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
         if(person.getName() != null) {
             person.setName(name);
         }
-        personRepository.save(person);
+        //personRepository.save(person); // в транзакционных методах save не нужен
         return modelMapper.map(person, PersonDto.class);
     }
 
+    @Transactional  //что бы не могли одновременно менять данные в базе
     @Override
     public PersonDto updatePersonAddress(Integer id, AddressDto addressDto) {
         Person person = personRepository.findById(id).orElseThrow(PersonNotFoundException::new);
@@ -56,27 +63,38 @@ public class PersonServiceImpl implements PersonService{
             Address newAddress = new Address(addressDto.getCity(), addressDto.getStreet(), addressDto.getBuilding());
             person.setAddress(newAddress);
         }
-        personRepository.save(person);
+        //personRepository.save(person);
         return modelMapper.map(person, PersonDto.class);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Iterable<PersonDto> findPersonsByCity(String city) {
-        return null;
+    public PersonDto[] findPersonsByCity(String city) {
+        return personRepository.findByNameIgnoreCase(city)
+                .map(p -> modelMapper.map(p, PersonDto.class))
+                .toArray(PersonDto[]::new);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Iterable<PersonDto> findPersonsByAge(Integer ageFrom, Integer ageTo) {
-        return null;
+    public PersonDto[] findPersonsByAge(Integer minAge, Integer maxAge) {
+        LocalDate from = LocalDate.now().minusYears(maxAge);
+        LocalDate to = LocalDate.now().plusYears(minAge);
+        return personRepository.findByBirthDateBetween(from, to)
+                .map(p -> modelMapper.map(p, PersonDto.class))
+                .toArray(PersonDto[]::new);
     }
 
+    @Transactional(readOnly = true) //чтение проходит паралельно, а запись по очереди
     @Override
-    public Iterable<PersonDto> findPersonsByName(String name) {
-        return null;
+    public PersonDto[] findPersonsByName(String name) {
+        return personRepository.findByNameIgnoreCase(name)
+                .map(p -> modelMapper.map(p, PersonDto.class))
+                .toArray(PersonDto[]::new);
     }
 
     @Override
     public Iterable<PopulationDto> getPopulations() {
-        return null;
+        return personRepository.getPopulations();
     }
 }
