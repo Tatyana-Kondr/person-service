@@ -12,6 +12,7 @@ public interface PersonService  {
     PersonDto[] findPersonsByAge(Integer ageFrom, Integer ageTo);
     PersonDto[] findPersonsByName(String name);
     Iterable<PopulationDto> getPopulations();
-    ChildDto[] findAllChildren();
-    EmployeeDto[] findEmployeesBySalary(Double minSalary, Double maxSalary);
+    ChildDto[] getChildren();
+    EmployeeDto[] findEmployeesBySalary(Integer minSalary, Integer maxSalary);
 }
+//при наследовании лучше использовать массивы

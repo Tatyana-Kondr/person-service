@@ -5,11 +5,6 @@ import lombok.Getter;
 import java.time.LocalDate;
 
 @Getter
-public class ChildDto {
-    Integer id;
-    String name;
-    LocalDate birthDate;
-    AddressDto address;
+public class ChildDto extends PersonDto{
     String kindergarten;
-    String type;
 }
