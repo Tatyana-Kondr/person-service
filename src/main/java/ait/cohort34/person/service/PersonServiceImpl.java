@@ -1,14 +1,15 @@
 package ait.cohort34.person.service;
 
 import ait.cohort34.person.dao.PersonRepository;
-import ait.cohort34.person.dto.AddressDto;
-import ait.cohort34.person.dto.PersonDto;
-import ait.cohort34.person.dto.PopulationDto;
+import ait.cohort34.person.dto.*;
 import ait.cohort34.person.dto.exceptions.PersonNotFoundException;
 import ait.cohort34.person.model.Address;
+import ait.cohort34.person.model.Child;
+import ait.cohort34.person.model.Employee;
 import ait.cohort34.person.model.Person;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class PersonServiceImpl implements PersonService{
+public class PersonServiceImpl implements PersonService, CommandLineRunner {
     final PersonRepository personRepository;
     final ModelMapper modelMapper;
 
@@ -70,7 +71,7 @@ public class PersonServiceImpl implements PersonService{
     @Transactional(readOnly = true)
     @Override
     public PersonDto[] findPersonsByCity(String city) {
-        return personRepository.findByNameIgnoreCase(city)
+        return personRepository.findByAddressCityIgnoreCase(city)
                 .map(p -> modelMapper.map(p, PersonDto.class))
                 .toArray(PersonDto[]::new);
     }
@@ -95,6 +96,32 @@ public class PersonServiceImpl implements PersonService{
 
     @Override
     public Iterable<PopulationDto> getPopulations() {
-        return personRepository.getPopulations();
+        return personRepository.getCitiesPopulations();
+    }
+
+    @Override
+    public ChildDto[] findAllChildren() {
+        return new ChildDto[0];
+    }
+
+    @Override
+    public EmployeeDto[] findEmployeesBySalary(Double minSalary, Double maxSalary) {
+        return new EmployeeDto[0];
+    }
+
+    @Transactional
+    @Override
+    public void run(String... args) throws Exception {
+        if(personRepository.count() == 0){
+            Person person = new Person(1000, "John", LocalDate.of(1985, 3, 11),
+                    new Address("Berlin", "Purim", 18));
+            Child child = new Child(2000, "Karl", LocalDate.of(2018, 3, 11),
+                    new Address("Hamburg", "Hauptstrasse", 5), "Sunny");
+            Employee employee = new Employee(3000, "Mary", LocalDate.of(1995, 11, 23),
+                    new Address("Bremen", "Pappelstrasse", 28), "Motorola", 4500);
+            personRepository.save(person);
+            personRepository.save(child);
+            personRepository.save(employee);
+        }
     }
 }
